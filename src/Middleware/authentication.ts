@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
+import { UsersService } from 'src/Services/user.service';
 
 @Injectable()
 export class Authentication implements NestMiddleware {
