@@ -1,7 +1,6 @@
 
 
 import { ApiProperty } from "@nestjs/swagger";
-import { isString } from "antd/es/button";
 import { IsDecimal, IsNumber, IsOptional, IsString } from "class-validator";
 import { Double } from "typeorm";
 import { isFloat32Array } from "util/types";

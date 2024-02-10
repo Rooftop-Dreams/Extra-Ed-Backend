@@ -3,10 +3,10 @@ import {
   NestMiddleware,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { NextFunction } from 'express';
-import * as jwt from 'jsonwebtoken';
-import { UsersService } from 'src/Services/user.service';
+} from "@nestjs/common";
+import { NextFunction } from "express";
+import * as jwt from "jsonwebtoken";
+import { UsersService } from "src/Services/user.service";
 
 @Injectable()
 export class Authentication implements NestMiddleware {
@@ -15,11 +15,11 @@ export class Authentication implements NestMiddleware {
   async use(req: any, res: any, next: NextFunction) {
     try {
       const header = (req.headers as any).authorization;
-      if (header && header.split(' ')[0] === 'Bearer') {
-        const token = header.split(' ')[1];
+      if (header && header.split(" ")[0] === "Bearer") {
+        const token = header.split(" ")[1];
         if (!token) {
           throw new HttpException(
-            'Please Login First',
+            "Please Login First",
             HttpStatus.UNAUTHORIZED,
           );
         }
@@ -29,7 +29,7 @@ export class Authentication implements NestMiddleware {
         req.user = user;
         next();
       } else {
-        throw new HttpException('Please Login First', HttpStatus.UNAUTHORIZED);
+        throw new HttpException("Please Login First", HttpStatus.UNAUTHORIZED);
       }
     } catch (error) {
       return next(new HttpException(error.message, HttpStatus.UNAUTHORIZED));

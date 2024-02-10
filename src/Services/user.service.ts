@@ -1,19 +1,19 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UsersCreateDto } from 'src/Dto/users/users-crate-Dto';
-import { IUserServiceInterface } from 'src/Interfaces/UserServiceInterface';
-import { usersEntity } from 'src/Entities/users.entity';
-import { userrepository } from 'src/Repository/users.repository';
-import { Repository } from 'typeorm';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { UsersCreateDto } from "src/Dto/users/users-crate-Dto";
+import { IUserServiceInterface } from "src/Interfaces/UserServiceInterface";
+import { usersEntity } from "src/Entities/users.entity";
+import { userrepository } from "src/Repository/users.repository";
+import { Repository } from "typeorm";
 
-import { AuthenticationDto } from 'src/Dto/users/auth-dto';
-import { ComparePassword, generrateToken } from 'src/Utils/comparePassword';
-import { request } from 'express';
-import { rolesEntity } from 'src/Entities/role.entity';
-import { IMG_URL } from 'src/const/common';
-import { hashPassword } from 'src/Utils/hashPassword';
-import { UsersUpdateDto } from 'src/Dto/users/users-update-dto';
-import { RessetPasswordeDto } from 'src/Dto/users/reste-password-dto';
+import { AuthenticationDto } from "src/Dto/users/auth-dto";
+import { ComparePassword, generrateToken } from "src/Utils/comparePassword";
+import { request } from "express";
+import { rolesEntity } from "src/Entities/role.entity";
+import { IMG_URL } from "src/const/common";
+import { hashPassword } from "src/Utils/hashPassword";
+import { UsersUpdateDto } from "src/Dto/users/users-update-dto";
+import { RessetPasswordeDto } from "src/Dto/users/reste-password-dto";
 @Injectable()
 export class UsersService implements IUserServiceInterface {
   constructor(
@@ -36,31 +36,31 @@ export class UsersService implements IUserServiceInterface {
     try {
       const user = await this.usersrepo.find({
         where: { isDeleted: false },
-        relations: ['role', 'role.permissions'],
+        relations: ["role", "role.permissions"],
       });
 
       return {
-        message: 'Success',
+        message: "Success",
         status: 200,
         user: user,
       };
     } catch (error) {
-      return new HttpException('user not found', HttpStatus.NOT_FOUND);
+      return new HttpException("user not found", HttpStatus.NOT_FOUND);
     }
   }
   async getuserById(id: string): Promise<object> {
     try {
       const user = await this.usersrepo.findOne({
         where: { id: id, isDeleted: false },
-        relations: ['role', 'role.permissions'],
+        relations: ["role", "role.permissions"],
       });
 
       if (!user) {
-        return new HttpException('user not found', HttpStatus.NOT_FOUND);
+        return new HttpException("user not found", HttpStatus.NOT_FOUND);
       }
 
       return {
-        message: 'Success',
+        message: "Success",
         status: 200,
         user: user,
       };
@@ -75,24 +75,26 @@ export class UsersService implements IUserServiceInterface {
       const userExists = await this.getusers(createDto.email);
 
       if (userExists) {
-        return new HttpException('email already exists', HttpStatus.FOUND);
+        return new HttpException("email already exists", HttpStatus.FOUND);
       } else {
-        const imagePath = file.path.replace(/\\/g, '/');
+        const imagePath = file.path.replace(/\\/g, "/");
         const userRole = await this.roleRepo.findOne({
-          where: { roleName: 'user' },
+          where: { roleName: "user" },
         });
 
         const user = this.usersrepo.create({
           name: createDto.name,
           email: createDto.email,
           password: hashedPassword,
-          roleId: userRole.id,
+          // roleId: "",
           proPic: `${IMG_URL}${imagePath}`,
+          // proPic: `mmm,m,`,
+
         });
         const createdUser = await this.usersrepo.save(user);
 
         return {
-          message: 'Successfuly created',
+          message: "Successfuly created",
           status: 201,
           user: createdUser,
         };
@@ -112,7 +114,7 @@ export class UsersService implements IUserServiceInterface {
       }
 
       return {
-        message: 'Success',
+        message: "Success",
         status: 200,
         user: user,
       };
@@ -124,9 +126,9 @@ export class UsersService implements IUserServiceInterface {
   async userLogin(authDto: AuthenticationDto): Promise<any> {
     try {
       const user = await this.getusers(authDto.email);
-      console.log(user, 'll');
+      console.log(user, "ll");
       if (!user) {
-        return new HttpException('email doesnt exist', HttpStatus.BAD_REQUEST);
+        return new HttpException("email doesnt exist", HttpStatus.BAD_REQUEST);
       } else {
         const cheakPassword = await ComparePassword(
           authDto.password,
@@ -136,13 +138,13 @@ export class UsersService implements IUserServiceInterface {
         if (cheakPassword) {
           const token = await generrateToken(user.id, process.env.JWT_SECRET);
           return {
-            message: 'Successfuly loggedIn',
+            message: "Successfuly loggedIn",
             user: user,
             token: token,
           };
         } else {
           return new HttpException(
-            'incorrect Password',
+            "incorrect Password",
             HttpStatus.BAD_REQUEST,
           );
         }
@@ -156,7 +158,7 @@ export class UsersService implements IUserServiceInterface {
     try {
       const deletedUser = await this.usersrepo.update(id, { isDeleted: true });
       return {
-        msg: 'Successfully dseleted the user!',
+        msg: "Successfully dseleted the user!",
         status: 200,
         data: deletedUser,
       };
@@ -176,7 +178,7 @@ export class UsersService implements IUserServiceInterface {
         roleId: updateDto.roleId,
       });
       return {
-        msg: 'succsesfuly updated',
+        msg: "succsesfuly updated",
         status: 200,
         user: updatedUser,
       };
