@@ -17,7 +17,6 @@ export class UserService {
     const userRole = await this.roleRepo.findOne({
       where: { roleName: "user" },
     });
-
     const user = this.usersrepo.create({
       name: createDto.name,
       email: createDto.email,
