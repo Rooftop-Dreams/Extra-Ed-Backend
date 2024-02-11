@@ -17,7 +17,7 @@ export class UserService {
     const userRole = await this.roleRepo.findOne({
       where: { roleName: "user" },
     });
-    
+
     const user = this.usersrepo.create({
       name: createDto.name,
       email: createDto.email,
@@ -25,6 +25,15 @@ export class UserService {
       roleId: userRole.id,
       proPic: `${IMG_URL}${imagePath}`,
     });
+    const createdUser = await this.usersrepo.save(user);
+
+    return {
+      message: "Successfuly created",
+      status: 201,
+      user: createdUser,
+
+
+  }
   }
 
   findAll() {
