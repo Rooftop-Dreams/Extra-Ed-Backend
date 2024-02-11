@@ -5,13 +5,15 @@ import {
   Column,
   BaseEntity,
   OneToMany,
+  UpdateDateColumn,
+  CreateDateColumn,
 } from "typeorm";
 import { Payment } from "./Payment";
 
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
-  user_id: number;
+  id: number;
 
   @Column()
   first_name: string;
@@ -36,6 +38,15 @@ export class User extends BaseEntity {
 
   @Column({ nullable: true })
   bio: string;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @Column({ default: "false" })
+  isDeleted: boolean;
 
   @Column({ nullable: true })
   profilePictureUrl: string;
