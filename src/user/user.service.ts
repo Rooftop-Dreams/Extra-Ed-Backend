@@ -1,11 +1,32 @@
-import { Injectable } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { UsersCreateDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { hashPassword } from "src/Utils/hashPassword";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return "This action adds a new user";
+
+  constructor(@InjectRepository(usersEntity) private readonly usersrepo: userrepository,)
+
+  async create(createDto: UsersCreateDto, file: File) {
+    const hashedPassword = await hashPassword(createDto.password);
+    const userExists = await this.findAll(createDto.email);
+    if (userExists) {
+      return new HttpException("email already exit", HttpStatus.FOUND);
+    }
+    const imagePath = file.path.replace(/\\/g, "/");
+    const userRole = await this.roleRepo.findOne({
+      where: { roleName: "user" },
+    });
+
+    const user = this.usersrepo.create({
+      name: createDto.name,
+      email: createDto.email,
+      password: hashedPassword,
+      roleId: userRole.id,
+      proPic: `${IMG_URL}${imagePath}`,
+    });
   }
 
   findAll() {
