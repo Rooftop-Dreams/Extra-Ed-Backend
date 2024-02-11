@@ -17,6 +17,7 @@ export class UserService {
     const userRole = await this.roleRepo.findOne({
       where: { roleName: "user" },
     });
+    const IMG_URL = "Image URL "
 
     const user = this.usersrepo.create({
       name: createDto.name,
