@@ -6,7 +6,6 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class UserService {
-
   constructor(@InjectRepository(usersEntity) private readonly usersrepo: userrepository,)
 
   async create(createDto: UsersCreateDto, file: File) {
