@@ -3,10 +3,11 @@ import { UsersCreateDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { hashPassword } from "src/Utils/hashPassword";
 import { InjectRepository } from "@nestjs/typeorm";
+import { User } from "./entities/user.entity";
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(usersEntity) private readonly usersrepo: userrepository,)
+  constructor( private readonly usersRepo: User )
   async create(createDto: UsersCreateDto, file: File) {
     const hashedPassword = await hashPassword(createDto.password);
     const userExists = await this.findAll(createDto.email);
@@ -19,7 +20,7 @@ export class UserService {
     });
     const IMG_URL = "Image URL "
 
-    const user = this.usersrepo.create({
+    const user = this.usersRepo.create({
       name: createDto.name,
       email: createDto.email,
       password: hashedPassword,

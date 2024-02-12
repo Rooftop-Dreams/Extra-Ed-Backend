@@ -9,6 +9,7 @@ import { CategoryModule } from "./category/category.module";
 import { ScheduleModule } from "./schedule/schedule.module";
 import { NoteModule } from "./note/note.module";
 import { ChatModule } from "./chat/chat.module";
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -22,6 +23,7 @@ import { ChatModule } from "./chat/chat.module";
     ScheduleModule,
     NoteModule,
     ChatModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
