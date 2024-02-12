@@ -3,6 +3,8 @@ import { AppModule } from "./app.module";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import * as session from "express-session";
+import * as passport from "passport";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,6 +20,20 @@ async function bootstrap() {
 
   app.enableCors();
 
+  app.setGlobalPrefix("api");
+
+  app.use(
+    session({
+      secret: "secret",
+      saveUninitialized: false,
+      resave: false,
+      cookie: { maxAge: 60000 },
+    }),
+  );
+
+  app.use(passport.initialize());
+
+  app.use(passport.session());
   const configureSrvice = app.get(ConfigService);
   const port = configureSrvice.get<number>("PORT");
 

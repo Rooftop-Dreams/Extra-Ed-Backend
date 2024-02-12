@@ -9,20 +9,20 @@ import { CategoryModule } from "./category/category.module";
 import { ScheduleModule } from "./schedule/schedule.module";
 import { NoteModule } from "./note/note.module";
 import { ChatModule } from "./chat/chat.module";
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from "./auth/auth.module";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
     }),
-    PaymentModule,
+    // PaymentModule,
     UserModule,
-    BookModule,
-    CategoryModule,
-    ScheduleModule,
-    NoteModule,
-    ChatModule,
+    // BookModule,
+    // CategoryModule,
+    // ScheduleModule,
+    // NoteModule,
+    // ChatModule,
     AuthModule,
   ],
   controllers: [],
