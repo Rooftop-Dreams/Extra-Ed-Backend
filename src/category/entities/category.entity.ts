@@ -1,11 +1,11 @@
 // Category.ts
-import { Book } from "src/book/entities/book.entity";
+// import { BookEntity } from "src/book/entities/book.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  OneToMany,
+  // OneToMany,
 } from "typeorm";
 
 @Entity()
@@ -16,6 +16,6 @@ export class Category extends BaseEntity {
   @Column()
   name: string;
 
-  @OneToMany(() => Book, (book) => book.category)
-  books: Book[];
+  // @OneToMany(() => BookEntity, (book) => book.category)
+  // books: BookEntity[];
 }

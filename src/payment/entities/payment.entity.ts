@@ -1,5 +1,5 @@
 // Payment.ts
-import { Book } from "src/book/entities/book.entity";
+// import { BookEntity } from "src/book/entities/book.entity";
 import { User } from "src/user/entities/user.entity";
 import {
   Entity,
@@ -23,8 +23,8 @@ export class Payment extends BaseEntity {
   @Column()
   book_id: number;
 
-  @ManyToOne(() => Book, (book) => book.payments)
-  book: Book;
+  // @ManyToOne(() => BookEntity, (book) => book.payments)
+  // book: BookEntity;
 
   @Column()
   amount: number;
