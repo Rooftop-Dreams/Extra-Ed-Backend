@@ -1,6 +1,6 @@
 // Payment.ts
 // import { BookEntity } from "src/book/entities/book.entity";
-import { User } from "src/user/entities/user.entity";
+import { UserEntity } from "src/user/entities/user.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -17,8 +17,8 @@ export class Payment extends BaseEntity {
   @Column()
   user_id: number;
 
-  @ManyToOne(() => User, (user) => user.payments)
-  user: User;
+  // @ManyToOne(() => UserEntity, (user) => user.payments)
+  // user: UserEntity;
 
   @Column()
   book_id: number;

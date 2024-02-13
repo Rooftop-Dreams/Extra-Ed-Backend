@@ -1,5 +1,5 @@
 // User.ts
-import { Payment } from "src/payment/entities/payment.entity";
+// import { Payment } from "src/payment/entities/payment.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -11,7 +11,7 @@ import {
 } from "typeorm";
 
 @Entity()
-export class User extends BaseEntity {
+export class UserEntity extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: number;
 
@@ -54,6 +54,6 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   profilePictureUrl: string;
 
-  @OneToMany(() => Payment, (payment) => payment.user)
-  payments: Payment[];
+  // @OneToMany(() => Payment, (payment) => payment.user)
+  // payments: Payment[];
 }
