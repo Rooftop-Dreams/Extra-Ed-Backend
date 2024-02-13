@@ -9,10 +9,13 @@ export class UsersCreateDto {
   last_name: string;
   @ApiProperty()
   @IsString()
-  age: string;
+  age: number;
   @ApiProperty()
   @IsString()
   bio: string;
+  @ApiProperty()
+  @IsString()
+  password: string;
   @ApiProperty()
   @IsString()
   @IsEmail()
@@ -22,7 +25,7 @@ export class UsersCreateDto {
   gener: string;
   @ApiProperty()
   @IsString()
-  grade: string;
+  grade: number;
   @ApiProperty()
   @IsString()
   phone: string;

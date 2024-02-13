@@ -25,6 +25,9 @@ export class User extends BaseEntity {
   email: string;
 
   @Column()
+  password: string;
+
+  @Column()
   age: number;
 
   @Column()
@@ -34,7 +37,7 @@ export class User extends BaseEntity {
   grade: number;
 
   @Column()
-  gener: number;
+  gener: string;
 
   @Column({ nullable: true })
   bio: string;
