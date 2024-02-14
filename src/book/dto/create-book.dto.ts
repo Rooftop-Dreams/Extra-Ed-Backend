@@ -22,9 +22,16 @@ export class CreateBookDto {
   @IsString()
   cover_image_url: string;
   @ApiProperty()
+  @IsOptional()
   @IsString()
   pdf_url: string;
   @ApiProperty()
   @IsString()
   category_id: string;
+  // @ApiProperty()
+  // @IsString()
+  // cover: any;
+  // @ApiProperty()
+  // @IsString()
+  // pdf: any;
 }

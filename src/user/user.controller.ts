@@ -15,7 +15,6 @@ import {
 import { UsersCreateDto } from "./dto/create-user.dto";
 import { UsersService } from "./user.service";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { diskStorage } from "multer";
 import { AuthenticationDto } from "src/auth/dto/auth-dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { RessetPasswordeDto } from "./dto/reset-password.dot";
@@ -25,20 +24,10 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Post()
-  @UseInterceptors(
-    FileInterceptor("file", {
-      storage: diskStorage({
-        destination: "./uploads",
-        filename: (req, file, cb) => {
-          cb(null, `${file.originalname}`);
-          console.log(file.originalname, "lll");
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor("file"))
   async createUsers(
     @Body() createDto: UsersCreateDto,
-    @UploadedFile() file: File,
+    @UploadedFile() file,
   ): Promise<object> {
     return await this.userService.createUser(createDto, file);
   }

@@ -33,10 +33,10 @@ export class BookEntity extends BaseEntity {
   @Column()
   grade: number;
 
-  @Column()
+  @Column({ nullable: true })
   cover_image_url: string;
 
-  @Column()
+  @Column({ nullable: true })
   pdf_url: string;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })

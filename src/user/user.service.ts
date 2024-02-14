@@ -70,7 +70,7 @@ export class UsersService {
       if (userExists) {
         return new HttpException("email already exists", HttpStatus.FOUND);
       } else {
-        const imagePath = file.path.replace(/\\/g, "/");
+        const imagePath = file?.path.replace(/\\/g, "/");
         createDto.profilePictureUrl = imagePath;
         createDto.password = hashedPassword;
         const user = this.userRepository.create(createDto);

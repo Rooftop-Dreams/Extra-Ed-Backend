@@ -6,18 +6,30 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFiles,
+  HttpException,
+  HttpStatus,
 } from "@nestjs/common";
 import { BookService } from "./book.service";
 import { CreateBookDto } from "./dto/create-book.dto";
 import { UpdateBookDto } from "./dto/update-book.dto";
+import { FilesInterceptor } from "@nestjs/platform-express";
 
 @Controller("books")
 export class BookController {
   constructor(private readonly bookService: BookService) {}
-
   @Post()
-  create(@Body() createBookDto: CreateBookDto) {
-    return this.bookService.create(createBookDto);
+  @UseInterceptors(FilesInterceptor("files"))
+  create(
+    @Body() createBookDto: CreateBookDto,
+    @UploadedFiles() files: Express.Multer.File[],
+  ) {
+    try {
+      return this.bookService.create(createBookDto, files);
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   @Get()

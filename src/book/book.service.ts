@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateBookDto } from "./dto/create-book.dto";
 import { UpdateBookDto } from "./dto/update-book.dto";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -12,9 +12,27 @@ export class BookService {
     private readonly bookRepository: Repository<BookEntity>,
   ) {}
 
-  async create(createBookDto: CreateBookDto): Promise<BookEntity> {
-    const newBook = this.bookRepository.create(createBookDto);
-    return await this.bookRepository.save(newBook);
+  async create(createBookDto: CreateBookDto, files: any): Promise<any> {
+    try {
+      let pdfPath: string;
+      let coverPath: string;
+
+      files.forEach((file) => {
+        if (file.mimetype === "application/pdf") {
+          pdfPath = file.path.replace(/\\/g, "/");
+        } else if (file.mimetype.startsWith("image/")) {
+          coverPath = file.path.replace(/\\/g, "/");
+        }
+      });
+
+      createBookDto.cover_image_url = `${process.env.IMG_URL}${coverPath}`;
+      createBookDto.pdf_url = `${process.env.IMG_URL}${pdfPath}`;
+
+      const newBook = this.bookRepository.create(createBookDto);
+      return await this.bookRepository.save(newBook);
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 
   async findAll(): Promise<BookEntity[]> {

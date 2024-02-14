@@ -5,22 +5,26 @@ import { BookModule } from "./book/book.module";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Authentication } from "./middleware/authentication";
 import { UsersModule } from "./user/user.module";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "uploads"),
+      serveRoot: "/api/uploads",
+    }),
     UsersModule,
     BookModule,
-    // PaymentModule,
   ],
   controllers: [],
   providers: [],
 })
-// export class AppModule {}
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(Authentication).exclude("users").forRoutes("product");
+    consumer.apply(Authentication).exclude("users").forRoutes("products");
   }
 }
