@@ -59,9 +59,9 @@ export class BookService {
 
   async getPurchasedBooks(userId: number): Promise<BookEntity[]> {
     return await this.bookRepository
-      .createQueryBuilder("book")
-      .innerJoin("book.purchases", "purchase")
-      .where("purchase.user.id = :userId", { userId })
+      .createQueryBuilder("book_entity")
+      .innerJoin("book_entity.payment", "payment")
+      .where("book_entity.user.id = :userId", { userId })
       .getMany();
   }
 
@@ -78,8 +78,10 @@ export class BookService {
     }
 
     return await this.bookRepository
-      .createQueryBuilder("book")
-      .where("book.id NOT IN (:...purchasedBookIds)", { purchasedBookIds })
+      .createQueryBuilder("book_entity")
+      .where("book_entity.id NOT IN (:...purchasedBookIds)", {
+        purchasedBookIds,
+      })
       .getMany();
   }
 
