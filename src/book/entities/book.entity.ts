@@ -1,13 +1,13 @@
 // Book.ts
 // import { Category } from "src/category/entities/category.entity";
-// import { Payment } from "src/payment/entities/payment.entity";
+import { Payment } from "src/payment/entities/payment.entity";
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
   // ManyToOne,
-  // OneToMany,
+  OneToMany,
 } from "typeorm";
 
 @Entity()
@@ -42,6 +42,6 @@ export class BookEntity extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 
-  // @OneToMany(() => Payment, (payment) => payment.book)
-  // payments: Payment[];
+  @OneToMany(() => Payment, (payment) => payment.book)
+  payments: Payment[];
 }
