@@ -3,7 +3,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Note {
-    @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
