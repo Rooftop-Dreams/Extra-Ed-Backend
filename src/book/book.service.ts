@@ -74,7 +74,7 @@ export class BookService {
       .then((purchases) => purchases.map((purchase) => purchase.book_id));
 
     if (purchasedBookIds.length === 0) {
-      return await this.bookRepository.find(); // If no books are purchased, return all books
+      return await this.bookRepository.find();
     }
 
     return await this.bookRepository
