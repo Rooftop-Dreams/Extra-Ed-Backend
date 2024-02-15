@@ -96,7 +96,6 @@ export class BookService {
   async update(id: string, updateBookDto: UpdateBookDto): Promise<BookEntity> {
     const bookToUpdate = await this.bookRepository.findOneBy({ id });
     if (!bookToUpdate) {
-      // Handle error: book not found
       return null;
     }
 
