@@ -42,18 +42,45 @@ export class BookService {
   }
 
   async purchaseBook(userId: string, bookId: string): Promise<any> {
-    // Retrieve the user and book entities
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    const book = await this.bookRepository.findOne({ where: { id: bookId } });
+    try {
+      const user = await this.userRepository.findOne({ where: { id: userId } });
+      const book = await this.bookRepository.findOne({ where: { id: bookId } });
 
-    // Create a new purchase entry
-    const purchase = new Payment();
-    purchase.user = user;
-    purchase.book = book;
-    purchase.payment_date = new Date();
+      const purchase = new Payment();
+      purchase.user = user;
+      purchase.book = book;
+      purchase.payment_date = new Date();
 
-    // Save the purchase to the database
-    return await this.paymentRepository.save(purchase);
+      return await this.paymentRepository.save(purchase);
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async getPurchasedBooks(userId: number): Promise<BookEntity[]> {
+    return await this.bookRepository
+      .createQueryBuilder("book")
+      .innerJoin("book.purchases", "purchase")
+      .where("purchase.user.id = :userId", { userId })
+      .getMany();
+  }
+
+  async getUnpurchasedBooks(userId: number): Promise<BookEntity[]> {
+    const purchasedBookIds = await this.paymentRepository
+      .createQueryBuilder("payment")
+      .select("payment.bookId")
+      .where("payment.userId = :userId", { userId })
+      .getMany()
+      .then((purchases) => purchases.map((purchase) => purchase.book_id));
+
+    if (purchasedBookIds.length === 0) {
+      return await this.bookRepository.find(); // If no books are purchased, return all books
+    }
+
+    return await this.bookRepository
+      .createQueryBuilder("book")
+      .where("book.id NOT IN (:...purchasedBookIds)", { purchasedBookIds })
+      .getMany();
   }
 
   async findAll(): Promise<BookEntity[]> {
