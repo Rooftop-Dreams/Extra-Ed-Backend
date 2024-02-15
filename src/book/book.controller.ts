@@ -32,6 +32,14 @@ export class BookController {
     }
   }
 
+  @Post(":userId/purchase/:bookId")
+  async purchaseBook(
+    @Param("userId") userId: string,
+    @Param("bookId") bookId: string,
+  ) {
+    return await this.bookService.purchaseBook(userId, bookId);
+  }
+
   @Get()
   findAll() {
     return this.bookService.findAll();

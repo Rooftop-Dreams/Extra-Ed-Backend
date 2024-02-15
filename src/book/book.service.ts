@@ -4,12 +4,18 @@ import { UpdateBookDto } from "./dto/update-book.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BookEntity } from "./entities/book.entity";
 import { Repository } from "typeorm";
+import { Payment } from "src/payment/entities/payment.entity";
+import { UserEntity } from "src/user/entities/user.entity";
 
 @Injectable()
 export class BookService {
   constructor(
     @InjectRepository(BookEntity)
     private readonly bookRepository: Repository<BookEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
   ) {}
 
   async create(createBookDto: CreateBookDto, files: any): Promise<any> {
@@ -33,6 +39,21 @@ export class BookService {
     } catch (error) {
       return new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  async purchaseBook(userId: string, bookId: string): Promise<any> {
+    // Retrieve the user and book entities
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    const book = await this.bookRepository.findOne({ where: { id: bookId } });
+
+    // Create a new purchase entry
+    const purchase = new Payment();
+    purchase.user = user;
+    purchase.book = book;
+    purchase.payment_date = new Date();
+
+    // Save the purchase to the database
+    return await this.paymentRepository.save(purchase);
   }
 
   async findAll(): Promise<BookEntity[]> {

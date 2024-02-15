@@ -7,10 +7,12 @@ import { userrepository } from "./user.repository";
 import { AuthenticationServise } from "src/auth/auth.service";
 import { MulterModule } from "@nestjs/platform-express";
 import { multerConfig } from "src/Utils/uploadImage";
+import { BookEntity } from "src/book/entities/book.entity";
+import { Payment } from "src/payment/entities/payment.entity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([Payment, BookEntity, UserEntity]),
     MulterModule.register(multerConfig),
   ],
   providers: [UsersService, userrepository, AuthenticationServise],
