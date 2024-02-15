@@ -9,11 +9,16 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { join } from "path";
 import { AppService } from "./app.service";
 import { AppController } from "./app.controller";
+import { ChapaModule } from "./chapa-sdk";
+import { PaymentModule } from "./payment/payment.module";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: typeOrmConfig,
+    }),
+    ChapaModule.register({
+      secretKey: process.env.CHAPA_SECRET_KEY,
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, "..", "uploads"),
@@ -21,6 +26,7 @@ import { AppController } from "./app.controller";
     }),
     UsersModule,
     BookModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
