@@ -11,6 +11,7 @@ import { AppService } from "./app.service";
 import { AppController } from "./app.controller";
 import { ChapaModule } from "./chapa-sdk";
 import { PaymentModule } from "./payment/payment.module";
+import { AdminModule } from "./admin/admin.module";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -27,6 +28,7 @@ import { PaymentModule } from "./payment/payment.module";
     UsersModule,
     BookModule,
     PaymentModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

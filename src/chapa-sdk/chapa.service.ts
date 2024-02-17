@@ -28,7 +28,7 @@ import {
 } from "./validations";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BookEntity } from "src/book/entities/book.entity";
-import { Repository, getConnection } from "typeorm";
+import { Repository } from "typeorm";
 import { UserEntity } from "src/user/entities/user.entity";
 import { Payment } from "src/payment/entities/payment.entity";
 // import { customAlphabet } from "nanoid";
@@ -113,7 +113,6 @@ export class ChapaService implements IChapaService {
             .leftJoinAndSelect("payment.book", "book") // Join with the "book" entity
             .where("payment.id = :id", { id: purchased.id })
             .getOne();
-          console.log(populatedPurchase);
           responseData.purchased = { ...populatedPurchase };
         }
       }

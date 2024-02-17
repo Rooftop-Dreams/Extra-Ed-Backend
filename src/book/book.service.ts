@@ -96,7 +96,7 @@ export class BookService {
           (purchasedBook) => purchasedBook.id === book.id,
         );
         return {
-          ...(purchased ? book : { ...book, pdf_url: undefined }),
+          ...(purchased ? book : { ...book, pdf_url: null }),
         } as any as Omit<BookEntity, "pdf_url">;
       });
 
