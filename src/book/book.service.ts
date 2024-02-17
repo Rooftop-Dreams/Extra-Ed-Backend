@@ -58,11 +58,6 @@ export class BookService {
   }
 
   async getPurchasedBooks(userId: string): Promise<BookEntity[]> {
-    // return await this.bookRepository
-    //   .createQueryBuilder("book_entity")
-    //   .innerJoin("book_entity.payment", "payment")
-    //   .where("book_entity.user.id = :userId", { userId })
-    //   .getMany();
     const purchasedBooks = await this.paymentRepository
       .createQueryBuilder("payment")
       .innerJoinAndSelect("payment.book", "book")
@@ -74,9 +69,9 @@ export class BookService {
 
   async getUnpurchasedBooks(userId: string): Promise<BookEntity[]> {
     const purchasedBookIds = await this.paymentRepository
-      .createQueryBuilder("payment")
-      .select("payment.bookId")
-      .where("payment.userId = :userId", { userId })
+      .createQueryBuilder("book_entity")
+      // .select("book_entity.id", "book_entity.title", "book_entity.decription")
+      .where("book_entity = :userId", { userId })
       .getMany()
       .then((purchases) => purchases.map((purchase) => purchase.book));
 
@@ -92,8 +87,24 @@ export class BookService {
       .getMany();
   }
 
-  async findAll(): Promise<BookEntity[]> {
-    return await this.bookRepository.find();
+  async findAll(userId: string): Promise<Omit<BookEntity, "pdf_url">[]> {
+    const purchasedBooks = this.getPurchasedBooks(userId);
+    const allBooks = await this.bookRepository.find();
+    const booksWIthAndWithOurPdfUrl: Promise<Omit<BookEntity, "pdf_url">>[] =
+      allBooks.map(async (book) => {
+        const purchased = (await purchasedBooks).some(
+          (purchasedBook) => purchasedBook.id === book.id,
+        );
+        return {
+          ...(purchased ? book : { ...book, pdf_url: undefined }),
+        } as any as Omit<BookEntity, "pdf_url">;
+      });
+
+    const booksWIthAndWithOurPdfUrls = await Promise.all(
+      booksWIthAndWithOurPdfUrl,
+    );
+
+    return booksWIthAndWithOurPdfUrls;
   }
 
   async findOne(id: string): Promise<BookEntity> {

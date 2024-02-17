@@ -32,6 +32,9 @@ export class BookEntity extends BaseEntity {
   // @ManyToOne(() => Category, (category) => category.books)
   // category: Category;
 
+  // @IsOptional()
+  // @Column()
+  // desctiopion: string;
   @Column()
   grade: number;
 

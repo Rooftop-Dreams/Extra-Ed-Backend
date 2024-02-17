@@ -1,4 +1,3 @@
-import { number } from "yup";
 import { SplitType } from "../enums";
 
 interface Subaccount {

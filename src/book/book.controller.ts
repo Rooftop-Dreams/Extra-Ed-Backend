@@ -39,16 +39,17 @@ export class BookController {
   ) {
     return await this.bookService.purchaseBook(userId, bookId);
   }
-  @Get("/purchsed-books/:id")
+  @Get("/purchsed-books-by-user/:id")
   getPurchasedBooks(@Param("id") userId: string) {
     {
       /**Intended fetch purchsed books by id */
     }
     return this.bookService.getPurchasedBooks(userId);
   }
-  @Get()
-  findAll() {
-    return this.bookService.findAll();
+
+  @Get(":id")
+  findAll(@Param("id") userId) {
+    return this.bookService.findAll(userId);
   }
 
   @Get(":id")
