@@ -1,4 +1,5 @@
 // User.ts
+import { IsOptional } from "class-validator";
 import { Payment } from "src/payment/entities/payment.entity";
 import {
   Entity,
@@ -54,6 +55,7 @@ export class UserEntity extends BaseEntity {
   @Column({ nullable: true })
   profilePictureUrl: string;
 
+  @IsOptional()
   @OneToMany(() => Payment, (payment) => payment.user)
   payments: Payment[];
 }

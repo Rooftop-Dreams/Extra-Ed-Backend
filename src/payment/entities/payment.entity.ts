@@ -1,4 +1,5 @@
 // Payment.ts
+import { IsOptional } from "class-validator";
 import { BookEntity } from "src/book/entities/book.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import {
@@ -11,30 +12,30 @@ import {
 
 @Entity()
 export class Payment extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  payment_id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
-  @Column()
-  user_id: number;
-
+  @IsOptional()
   @ManyToOne(() => UserEntity, (user) => user.payments)
   user: UserEntity;
 
-  @Column()
-  book_id: number;
-
+  @IsOptional()
   @ManyToOne(() => BookEntity, (book) => book.payments)
   book: BookEntity;
 
+  @IsOptional()
   @Column()
   amount: number;
 
+  @IsOptional()
   @Column()
   payment_date: Date;
 
+  @IsOptional()
   @Column()
   payment_method: string;
 
+  @IsOptional()
   @Column()
   status: string;
 }

@@ -57,21 +57,28 @@ export class BookService {
     }
   }
 
-  async getPurchasedBooks(userId: number): Promise<BookEntity[]> {
-    return await this.bookRepository
-      .createQueryBuilder("book_entity")
-      .innerJoin("book_entity.payment", "payment")
-      .where("book_entity.user.id = :userId", { userId })
+  async getPurchasedBooks(userId: string): Promise<BookEntity[]> {
+    // return await this.bookRepository
+    //   .createQueryBuilder("book_entity")
+    //   .innerJoin("book_entity.payment", "payment")
+    //   .where("book_entity.user.id = :userId", { userId })
+    //   .getMany();
+    const purchasedBooks = await this.paymentRepository
+      .createQueryBuilder("payment")
+      .innerJoinAndSelect("payment.book", "book")
+      .where("payment.user = :userId", { userId })
       .getMany();
+
+    return purchasedBooks.map((payment) => payment.book);
   }
 
-  async getUnpurchasedBooks(userId: number): Promise<BookEntity[]> {
+  async getUnpurchasedBooks(userId: string): Promise<BookEntity[]> {
     const purchasedBookIds = await this.paymentRepository
       .createQueryBuilder("payment")
       .select("payment.bookId")
       .where("payment.userId = :userId", { userId })
       .getMany()
-      .then((purchases) => purchases.map((purchase) => purchase.book_id));
+      .then((purchases) => purchases.map((purchase) => purchase.book));
 
     if (purchasedBookIds.length === 0) {
       return await this.bookRepository.find();

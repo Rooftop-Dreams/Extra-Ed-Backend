@@ -1,3 +1,4 @@
+import { number } from "yup";
 import { SplitType } from "../enums";
 
 interface Subaccount {
@@ -15,6 +16,8 @@ export interface InitializeOptions {
   tx_ref: string;
   callback_url?: string;
   return_url?: string;
+  userId?: string;
+  bookId?: string;
   customization?: {
     title?: string;
     description?: string;

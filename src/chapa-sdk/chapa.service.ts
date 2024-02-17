@@ -4,6 +4,7 @@ import {
   Inject,
   HttpException,
   BadRequestException,
+  HttpStatus,
 } from "@nestjs/common";
 // import { alphanumeric } from "nanoid-dictionary";
 import { CHAPA_OPTIONS } from "./constants";
@@ -25,6 +26,11 @@ import {
   validateInitializeOptions,
   validateVerifyOptions,
 } from "./validations";
+import { InjectRepository } from "@nestjs/typeorm";
+import { BookEntity } from "src/book/entities/book.entity";
+import { Repository, getConnection } from "typeorm";
+import { UserEntity } from "src/user/entities/user.entity";
+import { Payment } from "src/payment/entities/payment.entity";
 // import { customAlphabet } from "nanoid";
 
 /**
@@ -61,14 +67,19 @@ export class ChapaService implements IChapaService {
   constructor(
     @Inject(CHAPA_OPTIONS) private chapaOptions: ChapaOptions,
     private readonly httpService: HttpService,
+    @InjectRepository(BookEntity)
+    private readonly bookRepository: Repository<BookEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(Payment)
+    private readonly paymentRepository: Repository<Payment>,
   ) {}
 
-  async initialize(
-    initializeOptions: InitializeOptions,
-  ): Promise<InitializeResponse> {
+  async initialize(initializeOptions: InitializeOptions): Promise<any> {
     try {
       await validateInitializeOptions(initializeOptions);
 
+      const responseData: any = {};
       const response = await this.httpService.axiosRef.post<InitializeResponse>(
         ChapaUrls.INITIALIZE,
         initializeOptions,
@@ -78,7 +89,37 @@ export class ChapaService implements IChapaService {
           },
         },
       );
-      return response.data;
+      if (response.status) {
+        const user = await this.userRepository.findOne({
+          where: { id: initializeOptions?.userId },
+        });
+        const book = await this.bookRepository.findOne({
+          where: { id: initializeOptions?.bookId },
+        });
+
+        const purchase = new Payment();
+        purchase.user = user;
+        purchase.book = book;
+        purchase.payment_date = new Date();
+        purchase.amount = parseFloat(initializeOptions.amount);
+        purchase.payment_method = "Direct";
+        purchase.status = "Payed";
+
+        const purchased = await this.paymentRepository.save(purchase);
+        if (purchased) {
+          const populatedPurchase = await this.paymentRepository
+            .createQueryBuilder("payment")
+            .leftJoinAndSelect("payment.user", "user") // Join with the "user" entity
+            .leftJoinAndSelect("payment.book", "book") // Join with the "book" entity
+            .where("payment.id = :id", { id: purchased.id })
+            .getOne();
+          console.log(populatedPurchase);
+          responseData.purchased = { ...populatedPurchase };
+        }
+      }
+      responseData.checkout_url = response.data.data;
+
+      return responseData;
     } catch (error) {
       if (error.response) {
         throw new HttpException(
@@ -86,9 +127,10 @@ export class ChapaService implements IChapaService {
           error.response.status,
         );
       } else if (error.name === "ValidationError") {
-        throw new BadRequestException(error.errors[0]);
+        // throw new BadRequestException(error.errors[0]);
+        throw new HttpException(error.errors[0], HttpStatus.BAD_REQUEST);
       } else {
-        throw error;
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
     }
   }

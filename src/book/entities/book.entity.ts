@@ -1,5 +1,6 @@
 // Book.ts
 // import { Category } from "src/category/entities/category.entity";
+import { IsOptional } from "class-validator";
 import { Payment } from "src/payment/entities/payment.entity";
 import {
   Entity,
@@ -24,8 +25,9 @@ export class BookEntity extends BaseEntity {
   @Column()
   is_available: boolean;
 
-  @Column()
-  category_id: string;
+  // @IsOptional()
+  // @Column()
+  // category_id: string;
 
   // @ManyToOne(() => Category, (category) => category.books)
   // category: Category;
@@ -42,6 +44,7 @@ export class BookEntity extends BaseEntity {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 
+  @IsOptional()
   @OneToMany(() => Payment, (payment) => payment.book)
   payments: Payment[];
 }

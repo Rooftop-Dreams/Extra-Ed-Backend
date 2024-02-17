@@ -19,41 +19,20 @@ import {
 
 @Controller("payment")
 export class PaymentController {
-  // constructor(private readonly paymentService: PaymentService) {}
-
-  // @Post()
-  // create(@Body() createPaymentDto: CreatePaymentDto) {
-  //   return this.paymentService.create(createPaymentDto);
-  // }
-
-  // @Get()
-  // findAll() {
-  //   return this.paymentService.findAll();
-  // }
-
-  // @Get(":id")
-  // findOne(@Param("id") id: string) {
-  //   return this.paymentService.findOne(+id);
-  // }
-
-  // @Patch(":id")
-  // update(@Param("id") id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-  //   return this.paymentService.update(+id, updatePaymentDto);
-  // }
-
-  // @Delete(":id")
-  // remove(@Param("id") id: string) {
-  //   return this.paymentService.remove(+id);
-  // }
-
   constructor(private readonly chapaService: ChapaService) {}
 
-  @Post("initialize")
-  async initialize(@Body() initializeOptions: InitializeOptions) {
+  @Post("initialize/:userId/purchase/:bookId")
+  async initialize(
+    @Body() initializeOptions: InitializeOptions,
+    @Param("userId") userId: string,
+    @Param("bookId") bookId: string,
+  ) {
     const tx_ref = await this.chapaService.generateTransactionReference();
     return this.chapaService.initialize({
       ...initializeOptions,
       tx_ref,
+      userId,
+      bookId,
     });
   }
 

@@ -8,10 +8,17 @@ import {
 } from "./interfaces";
 import { createChapaProviders } from "./chapa.providers";
 import { HttpModule } from "@nestjs/axios";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { Payment } from "src/payment/entities/payment.entity";
+import { BookEntity } from "src/book/entities/book.entity";
+import { UserEntity } from "src/user/entities/user.entity";
 
 @Global()
 @Module({
-  imports: [HttpModule],
+  imports: [
+    HttpModule,
+    TypeOrmModule.forFeature([Payment, BookEntity, UserEntity]),
+  ],
   providers: [ChapaService],
   exports: [ChapaService],
 })
