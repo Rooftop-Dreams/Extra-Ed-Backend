@@ -1,11 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateAdminDto } from "./dto/create-admin.dto";
-import { UpdateAdminDto } from "./dto/update-admin.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { BookEntity } from "src/book/entities/book.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import { Repository } from "typeorm";
 import { Payment } from "src/payment/entities/payment.entity";
+import { UpdateBookAdminDto } from "./dto/update-book-by-admin.dto";
 
 @Injectable()
 export class AdminService {
@@ -19,7 +19,7 @@ export class AdminService {
   ) {}
 
   create(createAdminDto: CreateAdminDto) {
-    return "This action adds a new admin";
+    return `This action adds a new admin ${createAdminDto}`;
   }
 
   async publishBook(bookId: string) {
@@ -40,19 +40,31 @@ export class AdminService {
       return new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
-  findAll() {
-    return `This action returns all admin`;
+  async findAll() {
+    const books = await this.bookRepository.find();
+    return books;
   }
 
-  findOne(id: number) {
+  findOne(id: string) {
     return `This action returns a #${id} admin`;
   }
 
-  update(id: number, updateAdminDto: UpdateAdminDto) {
-    return `This action updates a #${id} admin`;
+  async updateBook(id: string, updateAdminDto: UpdateBookAdminDto) {
+    const book = await this.bookRepository.findOne({ where: { id } });
+    book.title = updateAdminDto.title ?? book.title;
+    book.price = updateAdminDto.price ?? book.price;
+    book.is_available = updateAdminDto.is_available ?? book.is_available;
+    book.grade = updateAdminDto.grade ?? book.grade;
+    book.cover_image_url =
+      updateAdminDto.cover_image_url ?? book.cover_image_url;
+    book.pdf_url = updateAdminDto.pdf_url ?? book.pdf_url;
+
+    const updatedBook = await this.bookRepository.save(book);
+
+    return updatedBook;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} admin`;
+  remove(id: string) {
+    return `This action removes a ${id} admin`;
   }
 }
