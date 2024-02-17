@@ -48,7 +48,7 @@ export class BookController {
   }
 
   @Get(":id")
-  findAll(@Param("id") userId) {
+  findAll(@Param("id") userId: string) {
     return this.bookService.findAll(userId);
   }
 

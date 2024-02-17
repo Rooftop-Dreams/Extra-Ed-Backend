@@ -20,8 +20,8 @@ export class AdminController {
     return this.adminService.create(createAdminDto);
   }
 
-  @Post("/publis-book/:id")
-  publish(@Param() bookId: string) {
+  @Post("/publis-book/:bookId")
+  publish(@Param("bookId") bookId: string) {
     return this.adminService.publishBook(bookId);
   }
   @Get()
