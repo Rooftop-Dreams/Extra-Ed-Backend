@@ -70,7 +70,6 @@ export class BookService {
   async getUnpurchasedBooks(userId: string): Promise<BookEntity[]> {
     const purchasedBookIds = await this.paymentRepository
       .createQueryBuilder("book_entity")
-      // .select("book_entity.id", "book_entity.title", "book_entity.decription")
       .where("book_entity = :userId", { userId })
       .getMany()
       .then((purchases) => purchases.map((purchase) => purchase.book));
