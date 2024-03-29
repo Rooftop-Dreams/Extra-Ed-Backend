@@ -31,8 +31,8 @@ export class BookService {
         }
       });
 
-      createBookDto.cover_image_url = `${process.env.IMG_URL}${coverPath}`;
-      createBookDto.pdf_url = `${process.env.IMG_URL}${pdfPath}`;
+      createBookDto.coverImageUrl = `${process.env.IMG_URL}${coverPath}`;
+      createBookDto.pdfUrl = `${process.env.IMG_URL}${pdfPath}`;
 
       const newBook = this.bookRepository.create(createBookDto);
       return await this.bookRepository.save(newBook);
@@ -86,17 +86,17 @@ export class BookService {
       .getMany();
   }
 
-  async findAll(userId: string): Promise<Omit<BookEntity, "pdf_url">[]> {
+  async findAll(userId: string): Promise<Omit<BookEntity, "pdfUrl">[]> {
     const purchasedBooks = this.getPurchasedBooks(userId);
     const allBooks = await this.bookRepository.find();
-    const booksWIthAndWithOurPdfUrl: Promise<Omit<BookEntity, "pdf_url">>[] =
+    const booksWIthAndWithOurPdfUrl: Promise<Omit<BookEntity, "pdfUrl">>[] =
       allBooks.map(async (book) => {
         const purchased = (await purchasedBooks).some(
           (purchasedBook) => purchasedBook.id === book.id,
         );
         return {
-          ...(purchased ? book : { ...book, pdf_url: null }),
-        } as any as Omit<BookEntity, "pdf_url">;
+          ...(purchased ? book : { ...book, pdfUrl: null }),
+        } as any as Omit<BookEntity, "pdfUrl">;
       });
 
     const booksWIthAndWithOurPdfUrls = await Promise.all(

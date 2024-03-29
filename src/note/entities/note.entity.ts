@@ -25,7 +25,7 @@ export class Note {
   cover_image_url: string;
 
   @Column({ nullable: true })
-  pdf_url: string;
+  pdfUrl: string;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;

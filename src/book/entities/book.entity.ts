@@ -22,8 +22,8 @@ export class BookEntity extends BaseEntity {
   @Column()
   price: number;
 
-  @Column()
-  is_available: boolean;
+  @Column({ nullable: true })
+  isAvailable: boolean;
 
   // @IsOptional()
   // @Column()
@@ -39,13 +39,13 @@ export class BookEntity extends BaseEntity {
   grade: number;
 
   @Column({ nullable: true })
-  cover_image_url: string;
+  coverImageUrl: string;
 
   @Column({ nullable: true })
-  pdf_url: string;
+  pdfUrl: string;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
-  created_at: Date;
+  createdAt: Date;
 
   @IsOptional()
   @OneToMany(() => Payment, (payment) => payment.book)

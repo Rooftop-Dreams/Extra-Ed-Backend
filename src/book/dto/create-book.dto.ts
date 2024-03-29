@@ -9,7 +9,7 @@ export class CreateBookDto {
   price: number;
   @ApiProperty()
   @IsString()
-  is_available: boolean;
+  isAvailable: boolean;
   //   @ApiProperty()
   //   @IsString()
   //   @IsOptional()
@@ -20,14 +20,14 @@ export class CreateBookDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
-  cover_image_url: string;
+  coverImageUrl: string;
   @ApiProperty()
   @IsOptional()
   @IsString()
-  pdf_url: string;
-  @ApiProperty()
-  @IsString()
-  category_id: string;
+  pdfUrl: string;
+  // @ApiProperty()
+  // // @IsString()
+  // // category_id: string;
   // @ApiProperty()
   // @IsString()
   // cover: any;

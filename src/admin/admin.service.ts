@@ -32,7 +32,7 @@ export class AdminService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      book.is_available = true;
+      book.isAvailable = true;
       const updatedBook = await this.bookRepository.save(book);
 
       return updatedBook;
@@ -53,11 +53,10 @@ export class AdminService {
     const book = await this.bookRepository.findOne({ where: { id } });
     book.title = updateAdminDto.title ?? book.title;
     book.price = updateAdminDto.price ?? book.price;
-    book.is_available = updateAdminDto.is_available ?? book.is_available;
+    book.isAvailable = updateAdminDto.isAvailable ?? book.isAvailable;
     book.grade = updateAdminDto.grade ?? book.grade;
-    book.cover_image_url =
-      updateAdminDto.cover_image_url ?? book.cover_image_url;
-    book.pdf_url = updateAdminDto.pdf_url ?? book.pdf_url;
+    book.coverImageUrl = updateAdminDto.coverImageUrl ?? book.coverImageUrl;
+    book.pdfUrl = updateAdminDto.pdfUrl ?? book.pdfUrl;
 
     const updatedBook = await this.bookRepository.save(book);
 
