@@ -7,6 +7,8 @@ import { hashPassword } from "src/Utils/hashPassword";
 import { AuthenticationDto } from "src/auth/dto/auth-dto";
 import { ComparePassword, generrateToken } from "src/Utils/comparePassword";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { isEmail } from "class-validator";
+import { ForgottPasswordeDto } from "./dto/forgot-password-dto";
 
 @Injectable()
 export class UsersService {
@@ -20,6 +22,67 @@ export class UsersService {
       const userExists = await this.getusers(resetPasswordDto.email);
       if (userExists) {
         //send email
+      }
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+  generateOTP(): string {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    return otp;
+  }
+  async sendOTP(
+    otp: string,
+    recipient: string,
+    isEmail: boolean,
+  ): Promise<boolean> {
+    try {
+      // Replace this logic with your actual code to send OTP
+      if (isEmail) {
+        // Send OTP to email
+        // sendEmail(recipient, `Your OTP is: ${otp}`);
+        console.log(`OTP sent to email: ${recipient}`);
+      } else {
+        // Send OTP to phone number
+        // sendSMS(recipient, `Your OTP is: ${otp}`);
+        console.log(`OTP sent to phone number: ${recipient}`);
+      }
+      return true; // Indicate successful sending of OTP
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      return false; // Indicate failure in sending OTP
+    }
+  }
+  async forgotPassword(forgotPasswordDto: ForgottPasswordeDto): Promise<any> {
+    try {
+      let userExists;
+
+      if (forgotPasswordDto.email) {
+        userExists = await this.getusers(forgotPasswordDto.email);
+      } else if (forgotPasswordDto.phone) {
+        userExists = await this.getUserByPhoneNumber(forgotPasswordDto.phone);
+      } else {
+        throw new Error("Neither email nor phone provided");
+      }
+      if (userExists) {
+        const otp = this.generateOTP();
+        let recipient: string;
+        if (forgotPasswordDto.email) {
+          recipient = forgotPasswordDto.email;
+        } else {
+          recipient = forgotPasswordDto.phone!;
+        }
+        const isEmail = !!forgotPasswordDto.email;
+
+        const otpSent = await this.sendOTP(otp, recipient, isEmail);
+
+        if (otpSent) {
+          return { success: true, message: "OTP sent successfully" };
+        } else {
+          return { success: false, message: "Failed to send OTP" };
+        }
+      } else {
+        return { success: false, message: "User does not exist" };
       }
     } catch (error) {
       return new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -95,11 +158,32 @@ export class UsersService {
     }
   }
 
+  async getUserByPhoneNumber(phone: string): Promise<any> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { phone: phone, isDeleted: false },
+      });
+
+      return user;
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   async userLogin(authDto: AuthenticationDto): Promise<any> {
     try {
-      const user = await this.getusers(authDto.email);
+      // const user = await this.getusers(authDto.email);
+      let user: { password: string; id: string };
+      if (isEmail(authDto.email)) {
+        user = await this.getusers(authDto.email);
+      } else {
+        user = await this.getUserByPhoneNumber(authDto.phone);
+      }
       if (!user) {
-        return new HttpException("email doesnt exist", HttpStatus.BAD_REQUEST);
+        return new HttpException(
+          "email or phone number doesnt exist",
+          HttpStatus.BAD_REQUEST,
+        );
       } else {
         const cheakPassword = await ComparePassword(
           authDto.password,

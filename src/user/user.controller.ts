@@ -18,6 +18,7 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { AuthenticationDto } from "src/auth/dto/auth-dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { RessetPasswordeDto } from "./dto/reset-password.dot";
+import { ForgottPasswordeDto } from "./dto/forgot-password-dto";
 
 @Controller("user")
 export class UsersController {
@@ -76,5 +77,10 @@ export class UsersController {
   @Post("reset")
   async resetPassword(ressetPasswordeDto: RessetPasswordeDto): Promise<any> {
     return await this.userService.resetPassword(ressetPasswordeDto);
+  }
+
+  @Post("forgotPassword")
+  async forgotPassword(forgotPasswordDto: ForgottPasswordeDto): Promise<any> {
+    return await this.userService.forgotPassword(forgotPasswordDto);
   }
 }

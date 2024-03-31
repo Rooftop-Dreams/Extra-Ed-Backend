@@ -1,11 +1,12 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class AuthenticationDto {
   @IsString()
-  email: string;
-  @IsNumber()
   @IsOptional()
-  phone: number;
+  email: string;
+  @IsString()
+  @IsOptional()
+  phone: string;
   @IsString()
   password: string;
 }
