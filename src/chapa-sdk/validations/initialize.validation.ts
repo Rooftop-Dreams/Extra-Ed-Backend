@@ -9,7 +9,7 @@ export const validateInitializeOptions = async (
     last_name: yup.string().required(),
     email: yup.string().email(),
     currency: yup.string().required(),
-    amount: yup.string().required(),
+    amount: yup.string().nullable(),
     tx_ref: yup.string().required(),
     callback_url: yup.string().url().optional(),
     return_url: yup.string().url().optional(),

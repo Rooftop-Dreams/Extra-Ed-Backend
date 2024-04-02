@@ -49,6 +49,7 @@ export class BookService {
       const purchase = new Payment();
       purchase.user = user;
       purchase.book = book;
+      purchase.amount = book.price;
       purchase.payment_date = new Date();
 
       return await this.paymentRepository.save(purchase);
@@ -106,8 +107,21 @@ export class BookService {
     return booksWIthAndWithOurPdfUrls;
   }
 
-  async findOne(id: string): Promise<BookEntity> {
-    return await this.bookRepository.findOneBy({ id });
+  async findOne(
+    userId: string,
+    bookId: string,
+  ): Promise<Omit<BookEntity, "pdfUrl">> {
+    // return await this.bookRepository.findOneBy({ id });
+    const purchasedBooks = await this.getPurchasedBooks(userId);
+    const book = await this.bookRepository.findOneBy({ id: bookId });
+
+    const purchased = purchasedBooks.some(
+      (purchasedBook) => purchasedBook.id === book.id,
+    );
+
+    return {
+      ...(purchased ? book : { ...book, pdfUrl: null, preview: book.pdfUrl }),
+    } as unknown as Omit<BookEntity, "pdfUrl">;
   }
 
   async update(id: string, updateBookDto: UpdateBookDto): Promise<BookEntity> {

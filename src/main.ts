@@ -9,6 +9,9 @@ async function bootstrap() {
   app.enableCors({
     origin: "*",
   });
+  process.on("unhandledRejection", (e) => {
+    console.log(e);
+  });
   const config = new DocumentBuilder()
     .setTitle("Extra-ed")
     .setDescription("Extra-ed API")

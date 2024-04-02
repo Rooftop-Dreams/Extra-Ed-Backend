@@ -78,11 +78,20 @@ export class ChapaService implements IChapaService {
   async initialize(initializeOptions: InitializeOptions): Promise<any> {
     try {
       await validateInitializeOptions(initializeOptions);
+      const user = await this.userRepository.findOne({
+        where: { id: initializeOptions?.userId },
+      });
+      const book = await this.bookRepository.findOne({
+        where: { id: initializeOptions?.bookId },
+      });
 
+      initializeOptions.amount = book.price.toString();
       const responseData: any = {};
       const response = await this.httpService.axiosRef.post<InitializeResponse>(
         ChapaUrls.INITIALIZE,
+
         initializeOptions,
+
         {
           headers: {
             Authorization: `Bearer ${this.chapaOptions.secretKey}`,
@@ -90,18 +99,12 @@ export class ChapaService implements IChapaService {
         },
       );
       if (response.status) {
-        const user = await this.userRepository.findOne({
-          where: { id: initializeOptions?.userId },
-        });
-        const book = await this.bookRepository.findOne({
-          where: { id: initializeOptions?.bookId },
-        });
-
         const purchase = new Payment();
         purchase.user = user;
         purchase.book = book;
+        purchase.tx_ref = initializeOptions.tx_ref;
         purchase.payment_date = new Date();
-        purchase.amount = parseFloat(initializeOptions.amount);
+        purchase.amount = parseFloat(book.price.toString());
         purchase.payment_method = "Direct";
         purchase.status = "Payed";
 

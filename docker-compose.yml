@@ -26,6 +26,14 @@ services:
       - extra-ed-db
     volumes:
       - ./:/app
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: naomdebele002@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: 1234567890
 
 volumes:
   extra-ed-db:

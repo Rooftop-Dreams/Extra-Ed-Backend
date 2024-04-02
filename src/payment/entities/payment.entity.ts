@@ -24,18 +24,21 @@ export class Payment extends BaseEntity {
   book: BookEntity;
 
   @IsOptional()
-  @Column()
+  @Column({ nullable: true })
   amount: number;
 
   @IsOptional()
-  @Column()
+  @Column({ nullable: true })
   payment_date: Date;
 
   @IsOptional()
-  @Column()
+  @Column({ nullable: true })
   payment_method: string;
 
   @IsOptional()
-  @Column()
+  @Column({ nullable: true })
   status: string;
+  @IsOptional()
+  @Column({ nullable: true })
+  tx_ref: string;
 }

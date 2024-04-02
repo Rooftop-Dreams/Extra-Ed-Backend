@@ -52,9 +52,9 @@ export class BookController {
     return this.bookService.findAll(userId);
   }
 
-  @Get("single/:id")
-  findOne(@Param("id") id: string) {
-    return this.bookService.findOne(id);
+  @Get("single/:userId/:bookId")
+  findOne(@Param("userId") userId: string, @Param("bookId") bookId: string) {
+    return this.bookService.findOne(userId, bookId);
   }
 
   @Patch(":id")
