@@ -84,7 +84,14 @@ export class ChapaService implements IChapaService {
       const book = await this.bookRepository.findOne({
         where: { id: initializeOptions?.bookId },
       });
-
+      initializeOptions.callback_url = `http://10.0.2.2:3000/api/verify/${initializeOptions.tx_ref}`;
+      const logoUrl = `${process.env.IMG_URL}logo.png`;
+      initializeOptions.customization = {
+        title: "Hulubooks",
+        logo: logoUrl,
+        description: `You are buying ${book.title}`,
+      };
+      // initializeOptions.return_url = `http://10.0.2.2:3000/api/verify/${initializeOptions.tx_ref}`;
       initializeOptions.amount = book.price.toString();
       const responseData: any = {};
       const response = await this.httpService.axiosRef.post<InitializeResponse>(
@@ -99,29 +106,59 @@ export class ChapaService implements IChapaService {
         },
       );
       if (response.status) {
-        const purchase = new Payment();
-        purchase.user = user;
-        purchase.book = book;
-        purchase.tx_ref = initializeOptions.tx_ref;
-        purchase.payment_date = new Date();
-        purchase.amount = parseFloat(book.price.toString());
-        purchase.payment_method = "Direct";
-        purchase.status = "Payed";
+        const purchase = await this.paymentRepository
+          .createQueryBuilder("payment")
+          .where("payment.user = :userId", { userId: initializeOptions.userId })
+          .andWhere("payment.book = :bookId", {
+            bookId: initializeOptions.bookId,
+          })
+          .getOne();
+        if (purchase) {
+          purchase.user = user;
+          purchase.book = book;
+          purchase.tx_ref = initializeOptions.tx_ref;
+          purchase.payment_date = new Date();
+          purchase.amount = parseFloat(book.price.toString());
+          purchase.payment_method = "Direct";
+          await this.paymentRepository.update(purchase.id, purchase);
+          const purchased = await this.paymentRepository.save(purchase);
 
-        const purchased = await this.paymentRepository.save(purchase);
-        if (purchased) {
-          const populatedPurchase = await this.paymentRepository
-            .createQueryBuilder("payment")
-            .leftJoinAndSelect("payment.user", "user") // Join with the "user" entity
-            .leftJoinAndSelect("payment.book", "book") // Join with the "book" entity
-            .where("payment.id = :id", { id: purchased.id })
-            .getOne();
-          responseData.purchased = { ...populatedPurchase };
+          if (purchased) {
+            const populatedPurchase = await this.paymentRepository
+              .createQueryBuilder("payment")
+              .leftJoinAndSelect("payment.user", "user")
+              .leftJoinAndSelect("payment.book", "book")
+              .where("payment.id = :id", { id: purchased.id })
+              .getOne();
+            responseData.purchased = { ...populatedPurchase };
+          }
+        } else {
+          const purchase = new Payment();
+          purchase.user = user;
+          purchase.book = book;
+          purchase.tx_ref = initializeOptions.tx_ref;
+          purchase.payment_date = new Date();
+          purchase.amount = parseFloat(book.price.toString());
+          purchase.payment_method = "Direct";
+
+          const purchased = await this.paymentRepository.save(purchase);
+          if (purchased) {
+            const populatedPurchase = await this.paymentRepository
+              .createQueryBuilder("payment")
+              .leftJoinAndSelect("payment.user", "user")
+              .leftJoinAndSelect("payment.book", "book")
+              .where("payment.id = :id", { id: purchased.id })
+              .getOne();
+            responseData.purchased = { ...populatedPurchase };
+          }
+          responseData.checkout_url = response.data.data;
+
+          return responseData;
         }
-      }
-      responseData.checkout_url = response.data.data;
+        responseData.checkout_url = response.data.data;
 
-      return responseData;
+        return responseData;
+      }
     } catch (error) {
       if (error.response) {
         throw new HttpException(
@@ -129,7 +166,6 @@ export class ChapaService implements IChapaService {
           error.response.status,
         );
       } else if (error.name === "ValidationError") {
-        // throw new BadRequestException(error.errors[0]);
         throw new HttpException(error.errors[0], HttpStatus.BAD_REQUEST);
       } else {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -167,7 +203,7 @@ export class ChapaService implements IChapaService {
     }
   }
 
-  async verify(verifyOptions: VerifyOptions): Promise<VerifyResponse> {
+  async verify(verifyOptions: VerifyOptions): Promise<any> {
     try {
       await validateVerifyOptions(verifyOptions);
       const response = await this.httpService.axiosRef.get<VerifyResponse>(
@@ -178,7 +214,16 @@ export class ChapaService implements IChapaService {
           },
         },
       );
-      return response.data;
+      const payment = await this.paymentRepository.findOne({
+        where: { tx_ref: response.data.data.tx_ref },
+      });
+      if (payment.status == "PENDING") {
+        payment.status = "COMPLETED";
+        await this.paymentRepository.update(payment.id, payment);
+        return response.data;
+      } else {
+        return response.data;
+      }
     } catch (error) {
       if (error.response) {
         throw new HttpException(

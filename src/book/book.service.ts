@@ -119,8 +119,14 @@ export class BookService {
       (purchasedBook) => purchasedBook.id === book.id,
     );
 
+    const paymentStatus = await this.paymentRepository.findOne({
+      where: { user: { id: userId }, book: { id: bookId } },
+    });
+
     return {
-      ...(purchased ? book : { ...book, pdfUrl: null, preview: book.pdfUrl }),
+      ...(purchased && paymentStatus.status === "COMPLETED"
+        ? book
+        : { ...book, pdfUrl: null, preview: book.pdfUrl }),
     } as unknown as Omit<BookEntity, "pdfUrl">;
   }
 

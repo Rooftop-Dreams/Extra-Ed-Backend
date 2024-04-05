@@ -1,5 +1,5 @@
 // Payment.ts
-import { IsOptional } from "class-validator";
+import { IsIn, IsOptional } from "class-validator";
 import { BookEntity } from "src/book/entities/book.entity";
 import { UserEntity } from "src/user/entities/user.entity";
 import {
@@ -36,7 +36,8 @@ export class Payment extends BaseEntity {
   payment_method: string;
 
   @IsOptional()
-  @Column({ nullable: true })
+  @Column({ default: "PENDING" })
+  @IsIn(["PENDING", "COMPLETED"])
   status: string;
   @IsOptional()
   @Column({ nullable: true })
