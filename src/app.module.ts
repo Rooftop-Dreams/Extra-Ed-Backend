@@ -12,6 +12,7 @@ import { AppController } from "./app.controller";
 import { ChapaModule } from "./chapa-sdk";
 import { PaymentModule } from "./payment/payment.module";
 import { AdminModule } from "./admin/admin.module";
+import { ChatModule } from "./chat/chat.module";
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -29,6 +30,7 @@ import { AdminModule } from "./admin/admin.module";
     BookModule,
     PaymentModule,
     AdminModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
