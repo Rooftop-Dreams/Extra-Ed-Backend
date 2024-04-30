@@ -7,7 +7,7 @@ import { hashPassword } from "src/Utils/hashPassword";
 import { AuthenticationDto } from "src/auth/dto/auth-dto";
 import { ComparePassword, generrateToken } from "src/Utils/comparePassword";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { isEmail } from "class-validator";
+import { isEmail, isPhoneNumber } from "class-validator";
 import { ForgottPasswordeDto } from "./dto/forgot-password-dto";
 
 @Injectable()
@@ -174,10 +174,21 @@ export class UsersService {
     try {
       // const user = await this.getusers(authDto.email);
       let user: { password: string; id: string };
+      if (!authDto.email && !authDto.phone) {
+        return new HttpException(
+          "email or phone number is must be inserted! ",
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       if (isEmail(authDto.email)) {
         user = await this.getusers(authDto.email);
-      } else {
+      } else if (isPhoneNumber("+251" + authDto.phone)) {
         user = await this.getUserByPhoneNumber(authDto.phone);
+      } else {
+        return new HttpException(
+          "email or phone number is must be inserted correctly!",
+          HttpStatus.BAD_REQUEST,
+        );
       }
       if (!user) {
         return new HttpException(
